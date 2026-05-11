@@ -438,7 +438,7 @@ function render() {
                 ${ins.map((ins,j)=>`
                   <tr>
                     <td><input class="ins-input" value="${ins.insumo.replace(/"/g,'&quot;')}" onchange="editInsumo('${p.id}',${j},this.value,null)"></td>
-                    <td><input class="ins-cost" type="number" value="${ins.costo}" onchange="editInsumo('${p.id}',${j},null,this.value)"></td>
+                    <td><input class="ins-cost" type="number" value="${ins.costo}" oninput="editInsumo('${p.id}',${j},null,this.value)" onchange="editInsumo('${p.id}',${j},null,this.value)"></td>
                     <td><button class="ins-del" onclick="delInsumo('${p.id}',${j})">✕</button></td>
                   </tr>`).join('')}
               </tbody>
@@ -501,7 +501,7 @@ function editInsumo(pid, j, nombre, costo) {
   const real  = insumos.indexOf(list[j]);
   if(real<0) return;
   if(nombre!==null) insumos[real].insumo = nombre;
-  if(costo !==null) insumos[real].costo  = costo;
+  if(costo !==null) insumos[real].costo = String(+costo || 0);
   markDirty();
 }
 
