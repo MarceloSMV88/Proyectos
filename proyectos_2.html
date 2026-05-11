@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyectos a Concretar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tierra: #2a1f16;
+    --musgo: #3d5230;
+    --paja: #c8a96e;
+    --crema: #f0e8d8;
+    --madera: #6b4f35;
+    --verde: #7aaa5e;
+    --rojo: #b94040;
+    --amarillo: #d4a017;
+    --panel: rgba(255,255,255,0.04);
+    --border: rgba(200,169,110,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background-color: var(--tierra);
+    background-image:
+      radial-gradient(ellipse at 15% 85%, rgba(61,82,48,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 10%, rgba(200,169,110,0.12) 0%, transparent 50%);
+    font-family: 'Courier Prime', monospace;
+    min-height: 100vh;
+    padding: 36px 16px 60px;
+    color: var(--crema);
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* HEADER */
+  header { text-align: center; margin-bottom: 30px; }
+  .hline { height:1px; background:linear-gradient(to right,transparent,var(--paja),transparent); margin:10px 0; }
+  h1 { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; color:var(--paja); text-transform:uppercase; letter-spacing:0.04em; line-height:1.1; }
+  .subtitle { font-size:0.68rem; letter-spacing:0.3em; color:var(--madera); text-transform:uppercase; margin-top:5px; }
+
+  /* STATUS BAR */
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 3px; padding: 9px 14px; margin-bottom: 14px;
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    gap: 10px;
+  }
+  .status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .status-dot.ok     { background: var(--verde); box-shadow: 0 0 6px var(--verde); }
+  .status-dot.saving { background: var(--amarillo); box-shadow: 0 0 6px var(--amarillo); animation: pulse 1s infinite; }
+  .status-dot.error  { background: var(--rojo); box-shadow: 0 0 6px var(--rojo); }
+  .status-dot.loading{ background: var(--paja); box-shadow: 0 0 6px var(--paja); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  #status-text { flex:1; color: var(--madera); }
+  .save-btn {
+    background: none; border: 1px solid rgba(200,169,110,0.35);
+    border-radius: 2px; color: var(--paja); font-family: inherit;
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 4px 12px; cursor: pointer; transition: all 0.2s;
+  }
+  .save-btn:hover { background: rgba(200,169,110,0.1); border-color: var(--paja); }
+  .save-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  /* SUMMARY */
+  .summary { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px; }
+  .sum-card { background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:12px 14px; text-align:center; }
+  .sum-label { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--madera); }
+  .sum-value { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--paja); margin-top:2px; }
+  .sum-value.green { color:var(--verde); }
+  .prog-wrap { background:rgba(255,255,255,0.05); border-radius:2px; height:4px; margin-top:8px; overflow:hidden; }
+  .prog-bar { height:100%; background:linear-gradient(to right,var(--musgo),var(--verde)); transition:width 0.5s ease; }
+
+  /* SKELETON */
+  .skeleton { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:18px; margin-bottom:12px; }
+  .skel-line { height:12px; background:rgba(255,255,255,0.07); border-radius:2px; margin-bottom:8px; }
+  .skel-line.short { width:40%; }
+  @keyframes shimmer { 0%{opacity:0.4} 50%{opacity:0.8} 100%{opacity:0.4} }
+  .skeleton { animation: shimmer 1.4s infinite; }
+
+  /* CARDS */
+  .projects { display:flex; flex-direction:column; gap:12px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:4px; overflow:hidden; animation:fadeUp 0.35s ease both; transition:border-color 0.25s; }
+  .card:hover { border-color:rgba(200,169,110,0.35); }
+  .card.done { opacity:0.5; }
+  .card.done .card-title { text-decoration:line-through; color:var(--madera); }
+  .card.p-alta  { border-left:4px solid var(--rojo); }
+  .card.p-media { border-left:4px solid var(--amarillo); }
+  .card.p-baja  { border-left:4px solid var(--musgo); }
+
+  .card-header { display:flex; align-items:center; gap:12px; padding:15px 16px; cursor:pointer; user-select:none; }
+  .cb { width:21px; height:21px; border:2px solid var(--paja); border-radius:2px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; transition:all 0.2s; }
+  .card.done .cb { background:var(--verde); border-color:var(--verde); }
+  .card-icon { font-size:1.4rem; flex-shrink:0; }
+  .card-meta { flex:1; min-width:0; }
+  .card-title { font-family:'Playfair Display',serif; font-size:1.02rem; font-weight:700; color:var(--crema); transition:color 0.2s; }
+  .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+  .tag { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:2px 7px; border-radius:20px; border:1px solid; }
+  .tag.p-alta  { border-color:var(--rojo);    color:var(--rojo); }
+  .tag.p-media { border-color:var(--amarillo); color:var(--amarillo); }
+  .tag.p-baja  { border-color:var(--verde);   color:var(--verde); }
+  .tag.info    { border-color:rgba(200,169,110,0.35); color:var(--paja); }
+  .toggle-btn  { font-size:0.9rem; color:var(--madera); transition:transform 0.3s; flex-shrink:0; }
+  .card.open .toggle-btn { transform:rotate(180deg); }
+
+  .card-body { max-height:0; overflow:hidden; transition:max-height 0.4s ease; }
+  .card.open .card-body { max-height:700px; }
+  .card-inner { padding:14px 16px 16px; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:520px){ .card-inner{ grid-template-columns:1fr; } }
+
+  .sec-label { font-size:0.58rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--madera); margin-bottom:8px; }
+  .insumos-list { list-style:none; }
+  .insumo-row { display:flex; align-items:baseline; gap:6px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .insumo-row::before { content:'—'; color:var(--madera); flex-shrink:0; }
+  .insumo-text { font-size:0.78rem; color:var(--crema); flex:1; background:none; border:none; outline:none; font-family:inherit; padding:0; cursor:text; }
+  .insumo-del { background:none; border:none; color:var(--madera); cursor:pointer; font-size:0.8rem; padding:0 2px; opacity:0.5; }
+  .insumo-del:hover { color:var(--rojo); opacity:1; }
+  .add-insumo { font-size:0.62rem; color:var(--madera); letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-top:7px; display:inline-block; }
+  .add-insumo:hover { color:var(--paja); }
+
+  .detail-grid { display:flex; flex-direction:column; gap:9px; }
+  .detail-row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .detail-key { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--madera); white-space:nowrap; }
+  .field { background:rgba(255,255,255,0.04); border:1px solid rgba(200,169,110,0.15); border-radius:2px; color:var(--crema); font-family:'Courier Prime',monospace; font-size:0.78rem; padding:3px 7px; outline:none; transition:border-color 0.2s; text-align:right; }
+  .field:focus { border-color:var(--paja); }
+  select.field { cursor:pointer; }
+
+  .notes-section { grid-column:1/-1; }
+  .notes-area { font-size:0.76rem; color:rgba(240,232,216,0.55); line-height:1.6; font-style:italic; font-family:'Courier Prime',monospace; background:none; border:none; border-bottom:1px dashed rgba(200,169,110,0.2); width:100%; resize:none; outline:none; padding:4px 2px; }
+  .notes-area:focus { border-bottom-color:rgba(200,169,110,0.5); color:var(--crema); }
+
+  .add-project-btn { width:100%; margin-top:14px; background:none; border:1px dashed rgba(200,169,110,0.25); border-radius:3px; padding:12px; color:var(--madera); font-family:'Courier Prime',monospace; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+  .add-project-btn:hover { border-color:var(--paja); color:var(--paja); }
+
+  /* ERROR BANNER */
+  .error-banner { background:rgba(185,64,64,0.12); border:1px solid rgba(185,64,64,0.35); border-radius:3px; padding:12px 16px; margin-bottom:16px; font-size:0.78rem; color:rgba(240,200,200,0.85); line-height:1.5; display:none; }
+  .error-banner.show { display:block; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="hline"></div>
+    <h1>Proyectos<br>a Concretar</h1>
+    <p class="subtitle">Planificación · Insumos · Costos · Google Sheets</p>
+    <div class="hline"></div>
+  </header>
+
+  <div class="statusbar">
+    <div class="status-dot loading" id="status-dot"></div>
+    <span id="status-text">Cargando datos desde Google Sheets…</span>
+    <button class="save-btn" id="save-btn" onclick="saveAll()" disabled>💾 Guardar</button>
+  </div>
+
+  <div class="error-banner" id="error-banner"></div>
+
+  <div class="summary">
+    <div class="sum-card">
+      <div class="sum-label">Completados</div>
+      <div class="sum-value green" id="s-done">— / —</div>
+      <div class="prog-wrap"><div class="prog-bar" id="s-bar" style="width:0%"></div></div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Costo Total</div>
+      <div class="sum-value" id="s-costo">$—</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Tiempo Total</div>
+      <div class="sum-value" id="s-tiempo">— días</div>
+    </div>
+  </div>
+
+  <div class="projects" id="lista">
+    <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+  </div>
+
+  <button class="add-project-btn" id="add-btn" onclick="addProject()" style="display:none">+ Agregar proyecto</button>
+
+</div>
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbzKapyy8MiSof2dvZLZQ-0HQeqHuuNu6wuqRB4H-PV0sLtGC4r7GVJiOdS6A-B9V1c1bg/exec';
+
+let data = [];
+let dirty = false;
+let saveTimer = null;
+
+// ── STATUS ────────────────────────────────────────────────
+function setStatus(state, msg) {
+  const dot  = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  const btn  = document.getElementById('save-btn');
+  dot.className  = 'status-dot ' + state;
+  text.textContent = msg;
+  btn.disabled = (state === 'saving' || state === 'loading');
+}
+
+function showError(msg) {
+  const b = document.getElementById('error-banner');
+  b.textContent = msg;
+  b.classList.add('show');
+}
+function hideError() {
+  document.getElementById('error-banner').classList.remove('show');
+}
+
+// ── LOAD ──────────────────────────────────────────────────
+async function loadData() {
+  setStatus('loading', 'Cargando datos desde Google Sheets…');
+  try {
+    const res = await fetch(API + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.json();
+
+    if (!Array.isArray(raw) || raw.length === 0) {
+      // Sheet vacía → cargar datos iniciales
+      data = defaultData();
+      render();
+      setStatus('saving', 'Sheet vacía, guardando datos iniciales…');
+      await saveAll(true);
+      return;
+    }
+
+    data = raw.map((p, i) => ({
+      id:        p.id || (i + 1),
+      icono:     p.icono     || '📋',
+      nombre:    p.nombre    || 'Sin nombre',
+      prioridad: p.prioridad || 'media',
+      fecha:     p.fecha     || '',
+      tiempo:    String(p.tiempo || '1'),
+      costo:     String(p.costo  || '0'),
+      insumos:   Array.isArray(p.insumos) ? p.insumos : [],
+      notas:     p.notas     || '',
+      done:      p.done === true || p.done === 'TRUE' || p.done === 'true',
+      open:      false
+    }));
+
+    hideError();
+    render();
+    setStatus('ok', 'Datos cargados · ' + new Date().toLocaleTimeString('es-AR'));
+    document.getElementById('add-btn').style.display = '';
+  } catch(e) {
+    showError('No se pudo conectar con Google Sheets. Revisá que el Web App esté publicado como "Cualquier persona". Error: ' + e.message);
+    setStatus('error', 'Error de conexión');
+    // Cargar datos de ejemplo para que no quede en blanco
+    data = defaultData();
+    render();
+    document.getElementById('add-btn').style.display = '';
+  }
+}
+
+// ── SAVE ──────────────────────────────────────────────────
+async function saveAll(silent = false) {
+  if (!silent) setStatus('saving', 'Guardando en Google Sheets…');
+  document.getElementById('save-btn').disabled = true;
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'save_all', data })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.ok) throw new Error('Respuesta inesperada del servidor');
+    hideError();
+    dirty = false;
+    setStatus('ok', 'Guardado correctamente · ' + new Date().toLocaleTimeString('es-AR'));
+  } catch(e) {
+    showError('Error al guardar: ' + e.message + '. Intentá de nuevo.');
+    setStatus('error', 'Error al guardar');
+  }
+  document.getElementById('save-btn').disabled = false;
+}
+
+// Auto-save con debounce de 3s
+function markDirty() {
+  dirty = true;
+  setStatus('saving', 'Cambios sin guardar…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveAll(), 3000);
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function fmt(n) { return '$' + Number(n||0).toLocaleString('es-AR'); }
+
+function updateSummary() {
+  const total = data.length;
+  const done  = data.filter(p => p.done).length;
+  const costo = data.reduce((a,p) => a + (+p.costo||0), 0);
+  const dias  = data.reduce((a,p) => { const m = String(p.tiempo).match(/(\d+)/); return a + (m ? +m[1] : 0); }, 0);
+  document.getElementById('s-done').textContent  = done + ' / ' + total;
+  document.getElementById('s-bar').style.width   = (total ? done/total*100 : 0) + '%';
+  document.getElementById('s-costo').textContent = fmt(costo);
+  document.getElementById('s-tiempo').textContent= dias + ' días';
+}
+
+function render() {
+  const lista = document.getElementById('lista');
+  lista.innerHTML = '';
+  data.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = `card p-${p.prioridad}${p.done?' done':''}${p.open?' open':''}`;
+    card.innerHTML = `
+      <div class="card-header" onclick="toggleOpen(${i})">
+        <div class="cb" onclick="toggleDone(event,${i})">${p.done?'✓':''}</div>
+        <div class="card-icon">${p.icono}</div>
+        <div class="card-meta">
+          <div class="card-title">${p.nombre}</div>
+          <div class="tags">
+            <span class="tag p-${p.prioridad}">▲ ${p.prioridad}</span>
+            <span class="tag info">📅 ${p.fecha||'—'}</span>
+            <span class="tag info">⏱ ${p.tiempo||'0'} días</span>
+            <span class="tag info">💲 ${fmt(p.costo)}</span>
+          </div>
+        </div>
+        <span class="toggle-btn">▾</span>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div>
+            <div class="sec-label">Insumos / Materiales</div>
+            <ul class="insumos-list">
+              ${p.insumos.map((ins,j) => `
+                <li class="insumo-row">
+                  <input class="insumo-text" value="${ins.replace(/"/g,'&quot;')}"
+                    onchange="data[${i}].insumos[${j}]=this.value; markDirty()">
+                  <button class="insumo-del" onclick="delInsumo(${i},${j})">✕</button>
+                </li>`).join('')}
+            </ul>
+            <span class="add-insumo" onclick="addInsumo(${i})">+ agregar insumo</span>
+          </div>
+          <div class="detail-grid">
+            <div class="sec-label">Detalles del proyecto</div>
+            <div class="detail-row">
+              <span class="detail-key">Ícono</span>
+              <input class="field" value="${p.icono}" style="width:60px;text-align:center"
+                onchange="data[${i}].icono=this.value; markDirty(); render()">
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">Prioridad</span>
+              <select class="field" onchange="data[${i}].prioridad=this.value; markDirty(); render()">
+                <option ${p.prioridad==='alta' ?'selected':''} value="alta">Alta</option>
+                <option ${p.prioridad==='media'?'selected':''} value="media">Media</option>
+                <option ${p.prioridad==='baja' ?'selected':''} value="baja">Baja</option>
+              </select>
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">Fecha estimada</span>
+              <input class="field" type="month" value="${p.fecha}" style="color-scheme:dark"
+                onchange="data[${i}].fecha=this.value; markDirty()">
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">Duración (días)</span>
+              <input class="field" type="number" min="0" value="${p.tiempo}" style="width:70px"
+                onchange="data[${i}].tiempo=this.value; markDirty()">
+            </div>
+            <div class="detail-row">
+              <span class="detail-key">Costo ($)</span>
+              <input class="field" type="number" min="0" value="${p.costo}" style="width:110px"
+                onchange="data[${i}].costo=this.value; markDirty()">
+            </div>
+            <div class="detail-row" style="margin-top:4px;justify-content:flex-end">
+              <button onclick="deleteProject(${i})"
+                style="background:none;border:1px solid rgba(185,64,64,0.4);border-radius:2px;color:var(--rojo);font-family:inherit;font-size:0.6rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;cursor:pointer;opacity:.7">
+                eliminar
+              </button>
+            </div>
+          </div>
+          <div class="notes-section">
+            <div class="sec-label">Notas</div>
+            <textarea class="notes-area" rows="2"
+              onchange="data[${i}].notas=this.value; markDirty()">${p.notas}</textarea>
+          </div>
+        </div>
+      </div>`;
+    lista.appendChild(card);
+  });
+  updateSummary();
+}
+
+// ── ACTIONS ───────────────────────────────────────────────
+function toggleOpen(i)      { data[i].open = !data[i].open; render(); }
+function toggleDone(e, i)   { e.stopPropagation(); data[i].done = !data[i].done; markDirty(); render(); }
+function addInsumo(i)       { data[i].insumos.push('Nuevo insumo'); markDirty(); render(); }
+function delInsumo(i, j)    { data[i].insumos.splice(j,1); markDirty(); render(); }
+function deleteProject(i)   {
+  if (confirm('¿Eliminar "' + data[i].nombre + '"?')) {
+    data.splice(i, 1); markDirty(); render();
+  }
+}
+function addProject() {
+  data.push({ id: Date.now(), icono:'📋', nombre:'Nuevo proyecto', prioridad:'media', fecha:'', tiempo:'1', costo:'0', insumos:['Insumo 1'], notas:'', done:false, open:true });
+  markDirty(); render();
+}
+
+// ── DEFAULT DATA ──────────────────────────────────────────
+function defaultData() {
+  return [
+    { id:1, icono:'🌿', nombre:'Invernadero',          prioridad:'alta',  fecha:'2025-09', tiempo:'15', costo:'180000', insumos:['Estructura metálica (caños)','Film plástico UV','Malla media sombra','Canales de riego','Tornillos y anclajes','Puerta y bisagras'],                      notas:'Elegir orientación norte-sur. Revisar nivelación del terreno.', done:false, open:false },
+    { id:2, icono:'📦', nombre:'Bodega (contenedor)',   prioridad:'alta',  fecha:'2025-08', tiempo:'7',  costo:'220000', insumos:['Contenedor 20 pies','Pintura anticorrosión','Aislación interior','Puerta reforzada','Rejillas de ventilación','Iluminación LED','Estanterías metálicas'], notas:'Nivelar con bloques de hormigón. Evitar sol directo en verano.',  done:false, open:false },
+    { id:3, icono:'🔧', nombre:'Taller',                prioridad:'media', fecha:'2025-10', tiempo:'10', costo:'95000',  insumos:['Mesada de trabajo','Tablero perforado','Tomacorrientes trifásicos','Iluminación fluorescente','Cajones y organizadores','Tornillo de banco'],              notas:'Planificar instalación eléctrica antes de equipar.',            done:false, open:false },
+    { id:4, icono:'🌲', nombre:'Talar los eucaliptos',  prioridad:'media', fecha:'2025-07', tiempo:'4',  costo:'45000',  insumos:['Motosierra + repuestos','Cuñas de tala','Casco y EPP','Sogas de guía','Tractor para traslado'],                                                          notas:'Verificar dirección de caída. Contratar ayuda para árboles grandes.', done:false, open:false },
+    { id:5, icono:'🪓', nombre:'Cortar y ordenar leña', prioridad:'baja',  fecha:'2025-11', tiempo:'3',  costo:'12000',  insumos:['Motosierra','Hacha y maza','Cuñas de madera','Guantes de trabajo','Lona para cubrir leñera'],                                                            notas:'Cortar en 35–40 cm. Apilar con ventilación para secado.',        done:false, open:false }
+  ];
+}
+
+// ── INIT ──────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
