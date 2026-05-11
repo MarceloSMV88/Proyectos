@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proyectos a Concretar</title>
+<title>Proyectos Parcela</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
     --tierra: #2a1f16;
@@ -12,162 +13,144 @@
     --paja: #c8a96e;
     --crema: #f0e8d8;
     --madera: #6b4f35;
-    --acento: #c4521a;
     --verde: #7aaa5e;
     --rojo: #b94040;
     --amarillo: #d4a017;
+    --azul: #4a7fa5;
     --panel: rgba(255,255,255,0.04);
     --border: rgba(200,169,110,0.18);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background-color: var(--tierra);
     background-image:
       radial-gradient(ellipse at 15% 85%, rgba(61,82,48,0.35) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 10%, rgba(200,169,110,0.12) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+      radial-gradient(ellipse at 85% 10%, rgba(200,169,110,0.12) 0%, transparent 50%);
     font-family: 'Courier Prime', monospace;
     min-height: 100vh;
     padding: 36px 16px 60px;
     color: var(--crema);
   }
+  .container { max-width: 860px; margin: 0 auto; }
 
-  .container { max-width: 780px; margin: 0 auto; }
+  /* HEADER */
+  header { text-align:center; margin-bottom:28px; }
+  .hline { height:1px; background:linear-gradient(to right,transparent,var(--paja),transparent); margin:10px 0; }
+  h1 { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; color:var(--paja); text-transform:uppercase; letter-spacing:0.04em; line-height:1.1; }
+  .subtitle { font-size:0.68rem; letter-spacing:0.3em; color:var(--madera); text-transform:uppercase; margin-top:5px; }
 
-  header { text-align: center; margin-bottom: 36px; }
-  .hline { height: 1px; background: linear-gradient(to right, transparent, var(--paja), transparent); margin: 10px 0; }
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    font-weight: 900; color: var(--paja);
-    text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.1;
-  }
-  .subtitle { font-size: 0.68rem; letter-spacing: 0.3em; color: var(--madera); text-transform: uppercase; margin-top: 5px; }
+  /* TABS */
+  .tabs { display:flex; gap:4px; margin-bottom:20px; }
+  .tab { flex:1; padding:9px; text-align:center; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; border:1px solid var(--border); border-radius:3px; background:var(--panel); color:var(--madera); transition:all 0.2s; }
+  .tab.active { background:rgba(200,169,110,0.12); border-color:rgba(200,169,110,0.5); color:var(--paja); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
 
-  /* SUMMARY */
-  .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 26px; }
-  .sum-card { background: var(--panel); border: 1px solid var(--border); border-radius: 3px; padding: 12px 14px; text-align: center; }
-  .sum-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--madera); }
-  .sum-value { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--paja); margin-top: 2px; }
-  .sum-value.green { color: var(--verde); }
-  .prog-wrap { background: rgba(255,255,255,0.05); border-radius: 2px; height: 4px; margin-top: 8px; overflow: hidden; }
-  .prog-bar { height: 100%; background: linear-gradient(to right, var(--musgo), var(--verde)); transition: width 0.5s ease; }
+  /* STATUS */
+  .statusbar { display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:9px 14px; margin-bottom:14px; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; }
+  .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dot.ok      { background:var(--verde);    box-shadow:0 0 6px var(--verde); }
+  .dot.saving  { background:var(--amarillo); box-shadow:0 0 6px var(--amarillo); animation:pulse 1s infinite; }
+  .dot.error   { background:var(--rojo);     box-shadow:0 0 6px var(--rojo); }
+  .dot.loading { background:var(--paja);     box-shadow:0 0 6px var(--paja); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+  #status-text { flex:1; color:var(--madera); }
+  .save-btn { background:none; border:1px solid rgba(200,169,110,0.35); border-radius:2px; color:var(--paja); font-family:inherit; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; padding:4px 12px; cursor:pointer; transition:all 0.2s; }
+  .save-btn:hover { background:rgba(200,169,110,0.1); border-color:var(--paja); }
+  .save-btn:disabled { opacity:0.4; cursor:not-allowed; }
 
-  /* CARDS */
-  .projects { display: flex; flex-direction: column; gap: 12px; }
+  /* ERROR */
+  .error-banner { background:rgba(185,64,64,0.12); border:1px solid rgba(185,64,64,0.35); border-radius:3px; padding:12px 16px; margin-bottom:16px; font-size:0.78rem; color:rgba(240,200,200,0.85); line-height:1.5; display:none; }
+  .error-banner.show { display:block; }
 
-  .card {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 4px; overflow: hidden;
-    animation: fadeUp 0.4s ease both;
-    transition: border-color 0.25s;
-  }
-  .card:hover { border-color: rgba(200,169,110,0.35); }
-  .card.done { opacity: 0.5; }
-  .card.done .card-title { text-decoration: line-through; color: var(--madera); }
-  .card.p-alta  { border-left: 4px solid var(--rojo); }
-  .card.p-media { border-left: 4px solid var(--amarillo); }
-  .card.p-baja  { border-left: 4px solid var(--musgo); }
+  /* SUMMARY CARDS */
+  .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:22px; }
+  @media(max-width:600px){ .summary{ grid-template-columns:repeat(2,1fr); } }
+  .sum-card { background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:12px 14px; text-align:center; }
+  .sum-label { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--madera); }
+  .sum-value { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--paja); margin-top:3px; }
+  .sum-value.green { color:var(--verde); }
+  .prog-wrap { background:rgba(255,255,255,0.05); border-radius:2px; height:4px; margin-top:8px; overflow:hidden; }
+  .prog-bar { height:100%; background:linear-gradient(to right,var(--musgo),var(--verde)); transition:width 0.5s; }
 
-  .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.10s}
-  .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.20s}
-  .card:nth-child(5){animation-delay:.25s}
+  /* PROJECT CARDS */
+  .projects { display:flex; flex-direction:column; gap:12px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:4px; overflow:hidden; animation:fadeUp 0.35s ease both; transition:border-color 0.25s; }
+  .card:hover { border-color:rgba(200,169,110,0.35); }
+  .card.done { opacity:0.5; }
+  .card.done .card-title { text-decoration:line-through; color:var(--madera); }
+  .card.p-alta  { border-left:4px solid var(--rojo); }
+  .card.p-media { border-left:4px solid var(--amarillo); }
+  .card.p-baja  { border-left:4px solid var(--musgo); }
 
-  /* HEADER ROW */
-  .card-header { display: flex; align-items: center; gap: 12px; padding: 15px 16px; cursor: pointer; user-select: none; }
+  .card-header { display:flex; align-items:center; gap:12px; padding:15px 16px; cursor:pointer; user-select:none; }
+  .cb { width:21px; height:21px; border:2px solid var(--paja); border-radius:2px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; transition:all 0.2s; }
+  .card.done .cb { background:var(--verde); border-color:var(--verde); }
+  .card-icon { font-size:1.4rem; flex-shrink:0; }
+  .card-meta { flex:1; min-width:0; }
+  .card-title { font-family:'Playfair Display',serif; font-size:1.02rem; font-weight:700; color:var(--crema); transition:color 0.2s; }
+  .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+  .tag { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:2px 7px; border-radius:20px; border:1px solid; }
+  .tag.p-alta  { border-color:var(--rojo);    color:var(--rojo); }
+  .tag.p-media { border-color:var(--amarillo); color:var(--amarillo); }
+  .tag.p-baja  { border-color:var(--verde);   color:var(--verde); }
+  .tag.info    { border-color:rgba(200,169,110,0.35); color:var(--paja); }
+  .toggle-btn  { font-size:0.9rem; color:var(--madera); transition:transform 0.3s; flex-shrink:0; }
+  .card.open .toggle-btn { transform:rotate(180deg); }
 
-  .cb {
-    width: 21px; height: 21px; border: 2px solid var(--paja); border-radius: 2px;
-    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: white; transition: all 0.2s;
-  }
-  .card.done .cb { background: var(--verde); border-color: var(--verde); }
+  .card-body { max-height:0; overflow:hidden; transition:max-height 0.45s ease; }
+  .card.open .card-body { max-height:900px; }
 
-  .card-icon { font-size: 1.4rem; flex-shrink: 0; }
-  .card-meta { flex: 1; min-width: 0; }
-  .card-title { font-family: 'Playfair Display', serif; font-size: 1.02rem; font-weight: 700; color: var(--crema); transition: color 0.2s; }
+  .card-inner { padding:14px 16px 16px; border-top:1px solid var(--border); display:grid; grid-template-columns:1.2fr 1fr; gap:18px; }
+  @media(max-width:540px){ .card-inner{ grid-template-columns:1fr; } }
 
-  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
-  .tag {
-    font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 2px 7px; border-radius: 20px; border: 1px solid;
-  }
-  .tag.p-alta  { border-color: var(--rojo);    color: var(--rojo); }
-  .tag.p-media { border-color: var(--amarillo); color: var(--amarillo); }
-  .tag.p-baja  { border-color: var(--verde);   color: var(--verde); }
-  .tag.info    { border-color: rgba(200,169,110,0.35); color: var(--paja); }
+  .sec-label { font-size:0.58rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--madera); margin-bottom:8px; }
 
-  .toggle-btn { font-size: 0.9rem; color: var(--madera); transition: transform 0.3s; flex-shrink: 0; }
-  .card.open .toggle-btn { transform: rotate(180deg); }
+  /* INSUMOS TABLE */
+  .insumos-table { width:100%; border-collapse:collapse; }
+  .insumos-table th { font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--madera); text-align:left; padding:3px 4px; border-bottom:1px solid var(--border); }
+  .insumos-table th.right { text-align:right; }
+  .insumos-table td { padding:4px 4px; border-bottom:1px solid rgba(255,255,255,0.03); vertical-align:middle; }
+  .ins-input { background:none; border:none; outline:none; font-family:inherit; font-size:0.78rem; color:var(--crema); width:100%; }
+  .ins-cost { background:none; border:none; outline:none; font-family:inherit; font-size:0.78rem; color:var(--paja); width:80px; text-align:right; }
+  .ins-del { background:none; border:none; color:var(--madera); cursor:pointer; font-size:0.75rem; padding:0 3px; opacity:0.5; }
+  .ins-del:hover { color:var(--rojo); opacity:1; }
+  .ins-total { font-size:0.72rem; color:var(--paja); text-align:right; margin-top:6px; font-weight:700; }
+  .add-insumo { font-size:0.62rem; color:var(--madera); letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-top:8px; display:inline-block; }
+  .add-insumo:hover { color:var(--paja); }
 
-  /* BODY */
-  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-  .card.open .card-body { max-height: 700px; }
+  /* DETAIL */
+  .detail-grid { display:flex; flex-direction:column; gap:8px; }
+  .detail-row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .detail-key { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--madera); white-space:nowrap; }
+  .field { background:rgba(255,255,255,0.04); border:1px solid rgba(200,169,110,0.15); border-radius:2px; color:var(--crema); font-family:'Courier Prime',monospace; font-size:0.78rem; padding:3px 7px; outline:none; transition:border-color 0.2s; text-align:right; }
+  .field:focus { border-color:var(--paja); }
+  select.field { cursor:pointer; }
 
-  .card-inner {
-    padding: 14px 16px 16px;
-    border-top: 1px solid var(--border);
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-  }
-  @media(max-width:520px){ .card-inner{ grid-template-columns:1fr; } }
+  .notes-section { grid-column:1/-1; }
+  .notes-area { font-size:0.76rem; color:rgba(240,232,216,0.55); line-height:1.6; font-style:italic; font-family:'Courier Prime',monospace; background:none; border:none; border-bottom:1px dashed rgba(200,169,110,0.2); width:100%; resize:none; outline:none; padding:4px 2px; }
+  .notes-area:focus { border-bottom-color:rgba(200,169,110,0.5); color:var(--crema); }
 
-  .sec-label { font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--madera); margin-bottom: 8px; }
+  .card-actions { grid-column:1/-1; display:flex; justify-content:flex-end; }
+  .del-btn { background:none; border:1px solid rgba(185,64,64,0.35); border-radius:2px; color:var(--rojo); font-family:inherit; font-size:0.6rem; letter-spacing:.12em; text-transform:uppercase; padding:3px 10px; cursor:pointer; opacity:.7; }
+  .del-btn:hover { opacity:1; }
 
-  /* Insumos */
-  .insumos-list { list-style: none; }
-  .insumo-row { display: flex; align-items: baseline; gap: 6px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-  .insumo-row::before { content: '—'; color: var(--madera); flex-shrink: 0; }
-  .insumo-text {
-    font-size: 0.78rem; color: var(--crema); flex: 1;
-    background: none; border: none; outline: none; font-family: inherit;
-    padding: 0; cursor: text;
-  }
-  .insumo-del { background: none; border: none; color: var(--madera); cursor: pointer; font-size: 0.8rem; padding: 0 2px; opacity: 0.5; }
-  .insumo-del:hover { color: var(--rojo); opacity: 1; }
-  .add-insumo { font-size: 0.62rem; color: var(--madera); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; margin-top: 7px; display: inline-block; }
-  .add-insumo:hover { color: var(--paja); }
+  .add-project-btn { width:100%; margin-top:14px; background:none; border:1px dashed rgba(200,169,110,0.25); border-radius:3px; padding:12px; color:var(--madera); font-family:'Courier Prime',monospace; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+  .add-project-btn:hover { border-color:var(--paja); color:var(--paja); }
 
-  /* Detail */
-  .detail-grid { display: flex; flex-direction: column; gap: 9px; }
-  .detail-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .detail-key { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--madera); white-space: nowrap; }
+  /* CHARTS */
+  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:600px){ .charts-grid{ grid-template-columns:1fr; } }
+  .chart-card { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:18px; }
+  .chart-title { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--madera); margin-bottom:14px; }
+  .chart-card.wide { grid-column:1/-1; }
 
-  .field {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(200,169,110,0.15);
-    border-radius: 2px; color: var(--crema); font-family: 'Courier Prime', monospace;
-    font-size: 0.78rem; padding: 3px 7px; outline: none;
-    transition: border-color 0.2s; text-align: right;
-  }
-  .field:focus { border-color: var(--paja); }
-  select.field { cursor: pointer; }
-
-  /* Notes */
-  .notes-section { grid-column: 1 / -1; }
-  .notes-area {
-    font-size: 0.76rem; color: rgba(240,232,216,0.55); line-height: 1.6;
-    font-style: italic; font-family: 'Courier Prime', monospace;
-    background: none; border: none; border-bottom: 1px dashed rgba(200,169,110,0.2);
-    width: 100%; resize: none; outline: none; padding: 4px 2px;
-  }
-  .notes-area:focus { border-bottom-color: rgba(200,169,110,0.5); color: var(--crema); }
-
-  /* Add project */
-  .add-project-btn {
-    width: 100%; margin-top: 14px;
-    background: none; border: 1px dashed rgba(200,169,110,0.25);
-    border-radius: 3px; padding: 12px;
-    color: var(--madera); font-family: 'Courier Prime', monospace;
-    font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .add-project-btn:hover { border-color: var(--paja); color: var(--paja); }
-
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(12px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
+  /* SKELETON */
+  .skeleton { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:18px; margin-bottom:12px; animation:shimmer 1.4s infinite; }
+  .skel-line { height:12px; background:rgba(255,255,255,0.07); border-radius:2px; margin-bottom:8px; }
+  .skel-line.short { width:45%; }
+  @keyframes shimmer { 0%{opacity:0.4}50%{opacity:0.8}100%{opacity:0.4} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
@@ -175,87 +158,252 @@
 
   <header>
     <div class="hline"></div>
-    <h1>Proyectos<br>a Concretar</h1>
+    <h1>Proyectos<br>Parcela</h1>
     <p class="subtitle">Planificación · Insumos · Costos · Tiempos</p>
     <div class="hline"></div>
   </header>
 
+  <div class="statusbar">
+    <div class="dot loading" id="sdot"></div>
+    <span id="status-text">Cargando…</span>
+    <button class="save-btn" id="save-btn" onclick="saveAll()" disabled>💾 Guardar</button>
+  </div>
+  <div class="error-banner" id="err"></div>
+
   <div class="summary">
     <div class="sum-card">
       <div class="sum-label">Completados</div>
-      <div class="sum-value green" id="s-done">0 / 5</div>
+      <div class="sum-value green" id="s-done">—</div>
       <div class="prog-wrap"><div class="prog-bar" id="s-bar" style="width:0%"></div></div>
     </div>
     <div class="sum-card">
       <div class="sum-label">Costo Total</div>
-      <div class="sum-value" id="s-costo">$0</div>
+      <div class="sum-value" id="s-costo">$—</div>
     </div>
     <div class="sum-card">
-      <div class="sum-label">Tiempo Total</div>
-      <div class="sum-value" id="s-tiempo">0 días</div>
+      <div class="sum-label">Días Totales</div>
+      <div class="sum-value" id="s-dias">—</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Insumos</div>
+      <div class="sum-value" id="s-insumos">—</div>
     </div>
   </div>
 
-  <div class="projects" id="lista"></div>
-  <button class="add-project-btn" onclick="addProject()">+ Agregar proyecto</button>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('proyectos')">📋 Proyectos</div>
+    <div class="tab" onclick="switchTab('graficos')">📊 Gráficos</div>
+  </div>
+
+  <!-- TAB PROYECTOS -->
+  <div class="tab-content active" id="tab-proyectos">
+    <div class="projects" id="lista">
+      <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+      <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+      <div class="skeleton"><div class="skel-line"></div><div class="skel-line short"></div></div>
+    </div>
+    <button class="add-project-btn" id="add-btn" onclick="addProject()" style="display:none">+ Agregar proyecto</button>
+  </div>
+
+  <!-- TAB GRAFICOS -->
+  <div class="tab-content" id="tab-graficos">
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Costo por proyecto</div>
+        <canvas id="chart-costo"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Progreso (completados vs pendientes)</div>
+        <canvas id="chart-progreso"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Duración estimada por proyecto (días)</div>
+        <canvas id="chart-dias"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Prioridad de proyectos</div>
+        <canvas id="chart-prioridad"></canvas>
+      </div>
+      <div class="chart-card wide">
+        <div class="chart-title">Desglose de insumos por proyecto</div>
+        <canvas id="chart-insumos"></canvas>
+      </div>
+    </div>
+  </div>
 
 </div>
 <script>
-let data = [
-  {
-    icono:'🌿', nombre:'Invernadero',
-    prioridad:'alta', fecha:'2025-09', tiempo:'15', costo:'180000',
-    insumos:['Estructura metálica (caños)','Film plástico UV','Malla media sombra','Canales de riego','Tornillos y anclajes','Puerta y bisagras'],
-    notas:'Elegir orientación norte-sur para mejor aprovechamiento solar. Revisar nivelación del terreno antes de comenzar.',
-    done:false, open:false
-  },
-  {
-    icono:'📦', nombre:'Bodega (contenedor)',
-    prioridad:'alta', fecha:'2025-08', tiempo:'7', costo:'220000',
-    insumos:['Contenedor 20 pies','Pintura anticorrosión','Aislación interior (telgopor/lana)','Puerta reforzada','Rejillas de ventilación','Iluminación LED','Estanterías metálicas'],
-    notas:'Nivelar con bloques de hormigón. Orientar para evitar sol directo en verano. Verificar acceso para carga.',
-    done:false, open:false
-  },
-  {
-    icono:'🔧', nombre:'Taller',
-    prioridad:'media', fecha:'2025-10', tiempo:'10', costo:'95000',
-    insumos:['Mesada de trabajo','Tablero perforado para herramientas','Tomacorrientes trifásicos','Iluminación fluorescente','Cajones y organizadores','Tornillo de banco'],
-    notas:'Planificar instalación eléctrica antes de equipar. Reservar espacio central para maquinaria pesada.',
-    done:false, open:false
-  },
-  {
-    icono:'🌲', nombre:'Talar los eucaliptos',
-    prioridad:'media', fecha:'2025-07', tiempo:'4', costo:'45000',
-    insumos:['Motosierra + combustible y cadena de repuesto','Cuñas de tala','Casco, guantes, protección facial','Sogas de guía','Tractor o zorra para traslado de troncos'],
-    notas:'Contratar ayuda para árboles de mayor porte. Verificar dirección de caída y zona despejada. Chequear vientos.',
-    done:false, open:false
-  },
-  {
-    icono:'🪓', nombre:'Cortar y ordenar leña',
-    prioridad:'baja', fecha:'2025-11', tiempo:'3', costo:'12000',
-    insumos:['Motosierra','Hacha y maza','Cuñas de madera','Guantes de trabajo','Lona para cubrir leñera'],
-    notas:'Cortar en largos de 35–40 cm. Apilar con ventilación entre filas para secado. Cubrir solo la parte superior.',
-    done:false, open:false
-  }
-];
+const API = 'https://script.google.com/macros/s/AKfycbzKapyy8MiSof2dvZLZQ-0HQeqHuuNu6wuqRB4H-PV0sLtGC4r7GVJiOdS6A-B9V1c1bg/exec';
 
-function fmt(n){ return '$'+Number(n||0).toLocaleString('es-AR'); }
+let proyectos = [];
+let insumos   = [];
+let saveTimer = null;
+let charts    = {};
 
-function updateSummary(){
-  const total = data.length;
-  const done  = data.filter(p=>p.done).length;
-  const costo = data.reduce((a,p)=>a+(+p.costo||0),0);
-  const dias  = data.reduce((a,p)=>{ const m=String(p.tiempo).match(/(\d+)/); return a+(m?+m[1]:0); },0);
-  document.getElementById('s-done').textContent  = done+' / '+total;
-  document.getElementById('s-bar').style.width   = (total?done/total*100:0)+'%';
-  document.getElementById('s-costo').textContent = fmt(costo);
-  document.getElementById('s-tiempo').textContent= dias+' días';
+// ── UTILS ─────────────────────────────────────────────────
+const fmt  = n  => '$' + Number(n||0).toLocaleString('es-AR');
+const fmtD = dt => dt ? String(dt).slice(0,10) : '';
+
+function today() {
+  return new Date().toISOString().slice(0,10);
 }
 
-function render(){
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+
+function diffDays(a, b) {
+  const da = new Date(a), db = new Date(b);
+  return Math.round((db - da) / 86400000);
+}
+
+function insumosDeProyecto(pid) {
+  return insumos.filter(i => String(i.proyecto_id) === String(pid));
+}
+
+function costoProyecto(pid) {
+  return insumosDeProyecto(pid).reduce((a,i) => a + (+i.costo||0), 0);
+}
+
+// ── STATUS ────────────────────────────────────────────────
+function setStatus(state, msg) {
+  document.getElementById('sdot').className = 'dot ' + state;
+  document.getElementById('status-text').textContent = msg;
+  document.getElementById('save-btn').disabled = state === 'loading' || state === 'saving';
+}
+function showErr(msg) { const e=document.getElementById('err'); e.textContent=msg; e.classList.add('show'); }
+function hideErr()    { document.getElementById('err').classList.remove('show'); }
+
+// ── TABS ──────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['proyectos','graficos'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'graficos') renderCharts();
+}
+
+// ── LOAD ──────────────────────────────────────────────────
+async function loadData() {
+  setStatus('loading','Cargando desde Google Sheets…');
+  try {
+    const res = await fetch(API + '?t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.json();
+
+    proyectos = (raw.proyectos||[]).map((p,i) => ({
+      id:          String(p.id || Date.now()+i),
+      icono:       p.icono     || '📋',
+      nombre:      p.nombre    || 'Sin nombre',
+      prioridad:   p.prioridad || 'media',
+      fecha_inicio:fmtD(p.fecha_inicio),
+      fecha_fin:   fmtD(p.fecha_fin),
+      dias:        String(p.dias || '1'),
+      notas:       p.notas     || '',
+      done:        p.done===true||String(p.done).toUpperCase()==='TRUE',
+      open:        false
+    }));
+
+    insumos = (raw.insumos||[]).map(i => ({
+      proyecto_id: String(i.proyecto_id),
+      insumo:      i.insumo || '',
+      costo:       String(i.costo || '0')
+    }));
+
+    if (proyectos.length === 0) {
+      proyectos = defaultProyectos();
+      insumos   = defaultInsumos();
+      await saveAll(true);
+    }
+
+    hideErr();
+    render();
+    setStatus('ok','Datos cargados · ' + new Date().toLocaleTimeString('es-AR'));
+    document.getElementById('add-btn').style.display = '';
+  } catch(e) {
+    showErr('Error de conexión: ' + e.message);
+    setStatus('error','Error de conexión');
+    proyectos = defaultProyectos();
+    insumos   = defaultInsumos();
+    render();
+    document.getElementById('add-btn').style.display = '';
+  }
+}
+
+// ── SAVE ──────────────────────────────────────────────────
+async function saveAll(silent=false) {
+  if(!silent) setStatus('saving','Guardando…');
+  document.getElementById('save-btn').disabled = true;
+  try {
+    const res = await fetch(API, {
+      method:'POST',
+      body: JSON.stringify({ action:'save_all', proyectos, insumos })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const json = await res.json();
+    if(!json.ok) throw new Error('Respuesta inesperada');
+    hideErr();
+    setStatus('ok','Guardado · ' + new Date().toLocaleTimeString('es-AR'));
+  } catch(e) {
+    showErr('Error al guardar: '+e.message);
+    setStatus('error','Error al guardar');
+  }
+  document.getElementById('save-btn').disabled = false;
+}
+
+function markDirty() {
+  setStatus('saving','Cambios sin guardar…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>saveAll(), 3000);
+}
+
+// ── DATE LOGIC ────────────────────────────────────────────
+function onFechaInicio(i, val) {
+  proyectos[i].fecha_inicio = val;
+  const dias = parseInt(proyectos[i].dias)||1;
+  proyectos[i].fecha_fin = addDays(val, dias);
+  markDirty(); render();
+}
+
+function onFechaFin(i, val) {
+  proyectos[i].fecha_fin = val;
+  const inicio = proyectos[i].fecha_inicio || today();
+  proyectos[i].fecha_inicio = proyectos[i].fecha_inicio || inicio;
+  const d = diffDays(inicio, val);
+  proyectos[i].dias = String(Math.max(1, d));
+  markDirty(); render();
+}
+
+function onDias(i, val) {
+  proyectos[i].dias = val;
+  const inicio = proyectos[i].fecha_inicio || today();
+  if (!proyectos[i].fecha_inicio) proyectos[i].fecha_inicio = inicio;
+  proyectos[i].fecha_fin = addDays(inicio, parseInt(val)||1);
+  markDirty(); render();
+}
+
+// ── SUMMARY ───────────────────────────────────────────────
+function updateSummary() {
+  const total = proyectos.length;
+  const done  = proyectos.filter(p=>p.done).length;
+  const costo = proyectos.reduce((a,p)=>a+costoProyecto(p.id),0);
+  const dias  = proyectos.reduce((a,p)=>a+(parseInt(p.dias)||0),0);
+  document.getElementById('s-done').textContent    = done+' / '+total;
+  document.getElementById('s-bar').style.width     = (total?done/total*100:0)+'%';
+  document.getElementById('s-costo').textContent   = fmt(costo);
+  document.getElementById('s-dias').textContent    = dias+' días';
+  document.getElementById('s-insumos').textContent = insumos.length;
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function render() {
   const lista = document.getElementById('lista');
-  lista.innerHTML='';
-  data.forEach((p,i)=>{
+  lista.innerHTML = '';
+  proyectos.forEach((p,i) => {
+    const ins  = insumosDeProyecto(p.id);
+    const total= ins.reduce((a,x)=>a+(+x.costo||0),0);
     const card = document.createElement('div');
     card.className=`card p-${p.prioridad}${p.done?' done':''}${p.open?' open':''}`;
     card.innerHTML=`
@@ -266,55 +414,76 @@ function render(){
           <div class="card-title">${p.nombre}</div>
           <div class="tags">
             <span class="tag p-${p.prioridad}">▲ ${p.prioridad}</span>
-            <span class="tag info">📅 ${p.fecha||'—'}</span>
-            <span class="tag info">⏱ ${p.tiempo||'0'} días</span>
-            <span class="tag info">💲 ${fmt(p.costo)}</span>
+            ${p.fecha_inicio?`<span class="tag info">📅 ${p.fecha_inicio}</span>`:''}
+            ${p.fecha_fin   ?`<span class="tag info">🏁 ${p.fecha_fin}</span>`:''}
+            <span class="tag info">⏱ ${p.dias} días</span>
+            <span class="tag info">💲 ${fmt(total)}</span>
           </div>
         </div>
         <span class="toggle-btn">▾</span>
       </div>
       <div class="card-body">
         <div class="card-inner">
+
+          <!-- INSUMOS -->
           <div>
             <div class="sec-label">Insumos / Materiales</div>
-            <ul class="insumos-list" id="ins-${i}">
-              ${p.insumos.map((ins,j)=>`
-                <li class="insumo-row">
-                  <input class="insumo-text" value="${ins}" onchange="data[${i}].insumos[${j}]=this.value">
-                  <button class="insumo-del" onclick="delInsumo(${i},${j})">✕</button>
-                </li>`).join('')}
-            </ul>
-            <span class="add-insumo" onclick="addInsumo(${i})">+ agregar insumo</span>
+            <table class="insumos-table">
+              <thead><tr>
+                <th>Descripción</th>
+                <th class="right">Costo</th>
+                <th></th>
+              </tr></thead>
+              <tbody id="ins-${i}">
+                ${ins.map((ins,j)=>`
+                  <tr>
+                    <td><input class="ins-input" value="${ins.insumo.replace(/"/g,'&quot;')}" onchange="editInsumo('${p.id}',${j},this.value,null)"></td>
+                    <td><input class="ins-cost" type="number" value="${ins.costo}" onchange="editInsumo('${p.id}',${j},null,this.value)"></td>
+                    <td><button class="ins-del" onclick="delInsumo('${p.id}',${j})">✕</button></td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+            <div class="ins-total">Total: ${fmt(total)}</div>
+            <span class="add-insumo" onclick="addInsumo('${p.id}')">+ agregar insumo</span>
           </div>
+
+          <!-- DETALLES -->
           <div class="detail-grid">
-            <div class="sec-label">Detalles del proyecto</div>
+            <div class="sec-label">Detalles</div>
+            <div class="detail-row">
+              <span class="detail-key">Ícono</span>
+              <input class="field" value="${p.icono}" style="width:55px;text-align:center" onchange="proyectos[${i}].icono=this.value;markDirty();render()">
+            </div>
             <div class="detail-row">
               <span class="detail-key">Prioridad</span>
-              <select class="field" onchange="setField(${i},'prioridad',this.value);render()">
-                <option ${p.prioridad==='alta'?'selected':''} value="alta">Alta</option>
+              <select class="field" onchange="proyectos[${i}].prioridad=this.value;markDirty();render()">
+                <option ${p.prioridad==='alta' ?'selected':''} value="alta">Alta</option>
                 <option ${p.prioridad==='media'?'selected':''} value="media">Media</option>
-                <option ${p.prioridad==='baja'?'selected':''} value="baja">Baja</option>
+                <option ${p.prioridad==='baja' ?'selected':''} value="baja">Baja</option>
               </select>
             </div>
             <div class="detail-row">
-              <span class="detail-key">Fecha estimada</span>
-              <input class="field" type="month" value="${p.fecha}" style="color-scheme:dark" onchange="setField(${i},'fecha',this.value)">
+              <span class="detail-key">Fecha inicio</span>
+              <input class="field" type="date" value="${p.fecha_inicio}" style="color-scheme:dark" onchange="onFechaInicio(${i},this.value)">
             </div>
             <div class="detail-row">
-              <span class="detail-key">Duración (días)</span>
-              <input class="field" type="number" min="0" value="${p.tiempo}" style="width:70px" onchange="setField(${i},'tiempo',this.value)">
+              <span class="detail-key">Fecha fin</span>
+              <input class="field" type="date" value="${p.fecha_fin}" style="color-scheme:dark" onchange="onFechaFin(${i},this.value)">
             </div>
             <div class="detail-row">
-              <span class="detail-key">Costo ($)</span>
-              <input class="field" type="number" min="0" value="${p.costo}" style="width:110px" onchange="setField(${i},'costo',this.value)">
-            </div>
-            <div class="detail-row" style="margin-top:6px;justify-content:flex-end">
-              <button onclick="deleteProject(${i})" style="background:none;border:1px solid rgba(185,64,64,0.4);border-radius:2px;color:var(--rojo);font-family:inherit;font-size:0.6rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;cursor:pointer;opacity:.7">eliminar proyecto</button>
+              <span class="detail-key">Días estimados</span>
+              <input class="field" type="number" min="1" value="${p.dias}" style="width:65px" onchange="onDias(${i},this.value)">
             </div>
           </div>
+
+          <!-- NOTAS -->
           <div class="notes-section">
             <div class="sec-label">Notas</div>
-            <textarea class="notes-area" rows="2" onchange="setField(${i},'notas',this.value)">${p.notas}</textarea>
+            <textarea class="notes-area" rows="2" onchange="proyectos[${i}].notas=this.value;markDirty()">${p.notas}</textarea>
+          </div>
+
+          <div class="card-actions">
+            <button class="del-btn" onclick="deleteProject(${i})">eliminar proyecto</button>
           </div>
         </div>
       </div>`;
@@ -323,18 +492,151 @@ function render(){
   updateSummary();
 }
 
-function toggleOpen(i){ data[i].open=!data[i].open; render(); }
-function toggleDone(e,i){ e.stopPropagation(); data[i].done=!data[i].done; render(); }
-function setField(i,k,v){ data[i][k]=v; updateSummary(); }
-function addInsumo(i){ data[i].insumos.push('Nuevo insumo'); render(); }
-function delInsumo(i,j){ data[i].insumos.splice(j,1); render(); }
-function deleteProject(i){ if(confirm('¿Eliminar este proyecto?')){ data.splice(i,1); render(); } }
-function addProject(){
-  data.push({ icono:'📋', nombre:'Nuevo proyecto', prioridad:'media', fecha:'', tiempo:'1', costo:'0', insumos:['Insumo 1'], notas:'', done:false, open:true });
-  render();
+// ── ACTIONS ───────────────────────────────────────────────
+function toggleOpen(i)    { proyectos[i].open=!proyectos[i].open; render(); }
+function toggleDone(e,i)  { e.stopPropagation(); proyectos[i].done=!proyectos[i].done; markDirty(); render(); }
+
+function editInsumo(pid, j, nombre, costo) {
+  const list = insumos.filter(x=>String(x.proyecto_id)===String(pid));
+  const real  = insumos.indexOf(list[j]);
+  if(real<0) return;
+  if(nombre!==null) insumos[real].insumo = nombre;
+  if(costo !==null) insumos[real].costo  = costo;
+  markDirty();
 }
 
-render();
+function addInsumo(pid) {
+  insumos.push({ proyecto_id:String(pid), insumo:'Nuevo insumo', costo:'0' });
+  markDirty(); render();
+}
+
+function delInsumo(pid, j) {
+  const list = insumos.filter(x=>String(x.proyecto_id)===String(pid));
+  const real  = insumos.indexOf(list[j]);
+  if(real>=0){ insumos.splice(real,1); markDirty(); render(); }
+}
+
+function deleteProject(i) {
+  if(!confirm('¿Eliminar "'+proyectos[i].nombre+'"?')) return;
+  const pid = proyectos[i].id;
+  proyectos.splice(i,1);
+  insumos = insumos.filter(x=>String(x.proyecto_id)!==String(pid));
+  markDirty(); render();
+}
+
+function addProject() {
+  const id = String(Date.now());
+  proyectos.push({ id, icono:'📋', nombre:'Nuevo proyecto', prioridad:'media', fecha_inicio:today(), fecha_fin:addDays(today(),7), dias:'7', notas:'', done:false, open:true });
+  markDirty(); render();
+}
+
+// ── CHARTS ────────────────────────────────────────────────
+const COLORS = ['#c8a96e','#7aaa5e','#4a7fa5','#d4a017','#b94040','#8a6abf','#5aacaa'];
+
+function destroyChart(id) { if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+function renderCharts() {
+  const nombres = proyectos.map(p=>p.nombre);
+  const costos  = proyectos.map(p=>costoProyecto(p.id));
+  const diasArr = proyectos.map(p=>parseInt(p.dias)||0);
+  const done    = proyectos.filter(p=>p.done).length;
+  const pend    = proyectos.length - done;
+  const alta    = proyectos.filter(p=>p.prioridad==='alta').length;
+  const media   = proyectos.filter(p=>p.prioridad==='media').length;
+  const baja    = proyectos.filter(p=>p.prioridad==='baja').length;
+
+  const chartOpts = {
+    plugins:{ legend:{ labels:{ color:'#c8a96e', font:{ family:'Courier Prime', size:11 } } } },
+    scales:{ x:{ ticks:{ color:'#6b4f35', font:{ family:'Courier Prime', size:10 } }, grid:{ color:'rgba(200,169,110,0.08)' } }, y:{ ticks:{ color:'#6b4f35', font:{ family:'Courier Prime', size:10 } }, grid:{ color:'rgba(200,169,110,0.08)' } } }
+  };
+
+  // Costo por proyecto
+  destroyChart('costo');
+  charts['costo'] = new Chart(document.getElementById('chart-costo'), {
+    type:'bar',
+    data:{ labels:nombres, datasets:[{ label:'Costo ($)', data:costos, backgroundColor:COLORS, borderRadius:3 }] },
+    options:{ ...chartOpts, plugins:{ ...chartOpts.plugins, legend:{display:false} } }
+  });
+
+  // Progreso
+  destroyChart('progreso');
+  charts['progreso'] = new Chart(document.getElementById('chart-progreso'), {
+    type:'doughnut',
+    data:{ labels:['Completados','Pendientes'], datasets:[{ data:[done,pend], backgroundColor:['#7aaa5e','rgba(200,169,110,0.2)'], borderColor:['#7aaa5e','rgba(200,169,110,0.3)'], borderWidth:1 }] },
+    options:{ plugins:{ legend:{ labels:{ color:'#c8a96e', font:{family:'Courier Prime',size:11} } } } }
+  });
+
+  // Duración
+  destroyChart('dias');
+  charts['dias'] = new Chart(document.getElementById('chart-dias'), {
+    type:'bar',
+    data:{ labels:nombres, datasets:[{ label:'Días', data:diasArr, backgroundColor:'rgba(74,127,165,0.7)', borderRadius:3 }] },
+    options:{ ...chartOpts, plugins:{ ...chartOpts.plugins, legend:{display:false} } }
+  });
+
+  // Prioridad
+  destroyChart('prioridad');
+  charts['prioridad'] = new Chart(document.getElementById('chart-prioridad'), {
+    type:'doughnut',
+    data:{ labels:['Alta','Media','Baja'], datasets:[{ data:[alta,media,baja], backgroundColor:['#b94040','#d4a017','#3d5230'], borderWidth:1 }] },
+    options:{ plugins:{ legend:{ labels:{ color:'#c8a96e', font:{family:'Courier Prime',size:11} } } } }
+  });
+
+  // Insumos stacked por proyecto
+  const pids = proyectos.map(p=>p.id);
+  const allIns = [...new Set(insumos.map(i=>i.insumo))];
+  const datasets = allIns.map((ins,idx) => ({
+    label: ins,
+    data: pids.map(pid => {
+      const found = insumos.find(x=>String(x.proyecto_id)===String(pid)&&x.insumo===ins);
+      return found ? +found.costo : 0;
+    }),
+    backgroundColor: COLORS[idx % COLORS.length],
+    borderRadius: 2
+  }));
+
+  destroyChart('insumos');
+  charts['insumos'] = new Chart(document.getElementById('chart-insumos'), {
+    type:'bar',
+    data:{ labels:nombres, datasets },
+    options:{ ...chartOpts, scales:{ ...chartOpts.scales, x:{ ...chartOpts.scales.x, stacked:true }, y:{ ...chartOpts.scales.y, stacked:true } }, plugins:{ ...chartOpts.plugins, legend:{ labels:{ color:'#c8a96e', font:{family:'Courier Prime',size:10}, boxWidth:12 } } } }
+  });
+}
+
+// ── DEFAULTS ──────────────────────────────────────────────
+function defaultProyectos() {
+  return [
+    { id:'1', icono:'🌿', nombre:'Invernadero',          prioridad:'alta',  fecha_inicio:'2025-09-01', fecha_fin:'2025-09-16', dias:'15', notas:'Orientación norte-sur. Revisar nivelación.', done:false, open:false },
+    { id:'2', icono:'📦', nombre:'Bodega (contenedor)',   prioridad:'alta',  fecha_inicio:'2025-08-01', fecha_fin:'2025-08-08', dias:'7',  notas:'Nivelar con hormigón. Evitar sol directo.', done:false, open:false },
+    { id:'3', icono:'🔧', nombre:'Taller',                prioridad:'media', fecha_inicio:'2025-10-01', fecha_fin:'2025-10-11', dias:'10', notas:'Planificar eléctrico antes de equipar.',    done:false, open:false },
+    { id:'4', icono:'🌲', nombre:'Talar los eucaliptos',  prioridad:'media', fecha_inicio:'2025-07-01', fecha_fin:'2025-07-05', dias:'4',  notas:'Verificar dirección de caída.',             done:false, open:false },
+    { id:'5', icono:'🪓', nombre:'Cortar y ordenar leña', prioridad:'baja',  fecha_inicio:'2025-11-01', fecha_fin:'2025-11-04', dias:'3',  notas:'Cortar en 35–40 cm. Apilar con ventilación.', done:false, open:false }
+  ];
+}
+function defaultInsumos() {
+  return [
+    {proyecto_id:'1',insumo:'Estructura metálica (caños)',costo:'45000'},
+    {proyecto_id:'1',insumo:'Film plástico UV',costo:'30000'},
+    {proyecto_id:'1',insumo:'Malla media sombra',costo:'20000'},
+    {proyecto_id:'1',insumo:'Canales de riego',costo:'25000'},
+    {proyecto_id:'1',insumo:'Tornillos y anclajes',costo:'8000'},
+    {proyecto_id:'2',insumo:'Contenedor 20 pies',costo:'150000'},
+    {proyecto_id:'2',insumo:'Pintura anticorrosión',costo:'18000'},
+    {proyecto_id:'2',insumo:'Iluminación LED',costo:'15000'},
+    {proyecto_id:'2',insumo:'Estanterías metálicas',costo:'37000'},
+    {proyecto_id:'3',insumo:'Mesada de trabajo',costo:'35000'},
+    {proyecto_id:'3',insumo:'Tablero perforado',costo:'12000'},
+    {proyecto_id:'3',insumo:'Tomacorrientes trifásicos',costo:'28000'},
+    {proyecto_id:'3',insumo:'Tornillo de banco',costo:'20000'},
+    {proyecto_id:'4',insumo:'Motosierra + repuestos',costo:'25000'},
+    {proyecto_id:'4',insumo:'Casco y EPP',costo:'12000'},
+    {proyecto_id:'4',insumo:'Sogas de guía',costo:'8000'},
+    {proyecto_id:'5',insumo:'Hacha y maza',costo:'8000'},
+    {proyecto_id:'5',insumo:'Lona para leñera',costo:'4000'},
+  ];
+}
+
+loadData();
 </script>
 </body>
 </html>
